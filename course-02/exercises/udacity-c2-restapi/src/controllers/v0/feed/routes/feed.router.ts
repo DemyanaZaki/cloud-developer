@@ -10,7 +10,7 @@ router.get('/', async (req: Request, res: Response) => {
     const items = await FeedItem.findAndCountAll({order: [['id', 'DESC']]});
     items.rows.map((item) => {
             if(item.url) {
-                item.url = AWS.getGetSignedUrl(item.url);
+                item.url = AWS.getGetSignedUrl(item.url); //getting key from database to get signed URL to access directly from client
             }
     });
     res.send(items);
@@ -29,6 +29,7 @@ router.patch('/:id',
 
 
 // Get a signed url to put a new item in the bucket
+//request a signed url for a file
 router.get('/signed-url/:fileName', 
     requireAuth, 
     async (req: Request, res: Response) => {

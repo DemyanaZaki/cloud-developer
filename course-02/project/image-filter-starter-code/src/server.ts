@@ -29,6 +29,8 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   /**************************************************************************** */
 
+
+
   //! END @TODO1
   
   // Root Endpoint
@@ -36,7 +38,26 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.get( "/", async ( req, res ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
-  
+
+
+
+  // https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXoPs7av_3dWLBqDdhBCuvlaYeG6_nX1D7rA&usqp=CAU
+  // this img response with 200 status code and any other img that start with https://
+  app.get("/filteredimage/", async (req : Request, res : Response) => {
+    try{
+    const image_url = req.query.image_url;
+    if ( !image_url ) {
+      return res.status(400)
+                .send(`image_url is required`);
+    }      
+    const image = await filterImageFromURL(image_url);
+    return res.status(200).sendFile(image , () => deleteLocalFiles([image]));
+    } catch (e) {
+      res.status(404)
+                .send(`image_url causes error`);
+    }
+  });  
+
 
   // Start the Server
   app.listen( port, () => {
